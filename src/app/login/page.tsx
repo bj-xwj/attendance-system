@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -31,8 +31,13 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/')
-    router.refresh()
+    // 登录成功，等待 session 同步后跳转
+    if (data.user) {
+      setTimeout(() => {
+        router.push('/')
+        router.refresh()
+      }, 100)
+    }
   }
 
   return (
