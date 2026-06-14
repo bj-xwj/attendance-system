@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.env.local
+todo-app/
+my-todo-app/
+my-todo-app-backup/
+attendance-system/
+memory/
+.DS_Store
+*.tsbuildinfo
