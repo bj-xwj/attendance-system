@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient, waitForSession } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Clock, Eye, EyeOff } from 'lucide-react'
@@ -20,29 +19,27 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (error) {
-      setError(error.message === 'Invalid login credentials' ? '邮箱或密码错误' : error.message)
-      setLoading(false)
-      return
-    }
+      const result = await response.json()
 
-    // 登录成功，等待 session 同步后跳转
-    if (data.user) {
-      // 等待 session 在浏览器中同步（最多 2 秒）
-      const session = await waitForSession(supabase, 2000)
-      
-      if (session) {
-        router.push('/')
-        router.refresh()
-      } else {
-        setError('会话同步失败，请重试')
+      if (!response.ok) {
+        setError(result.error || '登录失败')
         setLoading(false)
+        return
       }
+
+      // 登录成功，cookie 已自动设置，直接跳转
+      router.push('/')
+      router.refresh()
+    } catch (err) {
+      setError('网络错误，请重试')
+      setLoading(false)
     }
   }
 
