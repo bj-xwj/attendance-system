@@ -19,6 +19,7 @@ export default function LoginPage() {
     setError('')
 
     try {
+      // 强制请求最新 API 版本
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
